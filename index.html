@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Libro Premium ❦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════════════ */
+:root {
+  --black:    #04040a;
+  --deep:     #08080f;
+  --surface:  #0f0f1c;
+  --pink:     #ff3d85;
+  --pink2:    #ff80b4;
+  --purple:   #8b4fff;
+  --purple2:  #c084fc;
+  --gold:     #d4a96a;
+  --white:    #eeeef8;
+  --muted:    #9898b8;
+  --spring:   cubic-bezier(0.34,1.56,0.64,1);
+  --smooth:   cubic-bezier(0.4,0,0.2,1);
+  --sharp:    cubic-bezier(0.77,0,0.175,1);
+}
+
+/* ════════════════════════════════════════════════
+   RESET
+════════════════════════════════════════════════ */
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--black);
+  font-family:'Lato',sans-serif;
+  color:var(--white);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none; touch-action:none;
+}
+
+/* ════════════════════════════════════════════════
+   AMBIENT BACKGROUND
+════════════════════════════════════════════════ */
+#ambient {
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 100% 80% at 10% 0%,   rgba(139,79,255,.16) 0%, transparent 52%),
+    radial-gradient(ellipse 80%  65% at 90% 100%, rgba(255,61,133,.13) 0%, transparent 52%),
+    radial-gradient(ellipse 60%  50% at 50% 50%,  rgba(80,40,180,.07)  0%, transparent 60%),
+    var(--black);
+  animation: ambDrift 12s ease-in-out infinite alternate;
+}
+@keyframes ambDrift {
+  0%   { filter:hue-rotate(0deg)   brightness(1);    }
+  100% { filter:hue-rotate(22deg)  brightness(1.06); }
+}
+
+/* ════════════════════════════════════════════════
+   CANVAS LAYERS
+════════════════════════════════════════════════ */
+#pcvs   { position:fixed; inset:0; z-index:1; pointer-events:none; }
+#hearts { position:fixed; inset:0; z-index:2; pointer-events:none; }
+
+/* ════════════════════════════════════════════════
+   HEARTS
+════════════════════════════════════════════════ */
+.hrt {
+  position:absolute; bottom:-40px; line-height:1;
+  will-change:transform,opacity;
+  animation:hrtRise linear forwards;
+  filter:drop-shadow(0 0 6px rgba(255,61,133,.6));
+}
+@keyframes hrtRise {
+  0%  { opacity:0;   transform:translateY(0)     rotate(var(--r0)) scale(.25); }
+  7%  { opacity:.9;  transform:translateY(-7vh)  rotate(var(--r1)) scale(1);   }
+  50% { opacity:.65; transform:translateY(-48vh) rotate(var(--r2)) scale(1.08);}
+  93% { opacity:.25; transform:translateY(-92vh) rotate(var(--r3)) scale(.88); }
+  100%{ opacity:0;   transform:translateY(-103vh)rotate(var(--r4)) scale(.7);  }
+}
+
+/* ════════════════════════════════════════════════
+   STAGE
+════════════════════════════════════════════════ */
+#stage {
+  position:fixed; inset:0; z-index:10;
+  display:flex; align-items:center; justify-content:center;
+  perspective:1700px; perspective-origin:50% 46%;
+}
+
+/* ════════════════════════════════════════════════
+   BOOK WRAP
+════════════════════════════════════════════════ */
+#book-wrap {
+  position:relative;
+  animation:bookEntry 1.3s var(--spring) both;
+}
+@keyframes bookEntry {
+  0%   { transform:scale(.78) translateY(45px) rotateX(6deg); opacity:0; filter:blur(16px); }
+  100% { transform:scale(1)   translateY(0)    rotateX(0deg); opacity:1; filter:blur(0);    }
+}
+
+/* ════════════════════════════════════════════════
+   BOOK
+════════════════════════════════════════════════ */
+#book {
+  position:relative;
+  width:  min(355px, 87vw);
+  height: min(505px, 80vh);
+  transform-style:preserve-3d;
+  transform:rotateX(3.5deg) rotateY(-5deg);
+  transition:transform .9s var(--smooth);
+  /* drop shadow simulates lit surface */
+  filter:
+    drop-shadow(0 60px 100px rgba(0,0,0,.98))
+    drop-shadow(0 0 80px rgba(139,79,255,.14))
+    drop-shadow(2px 4px 0 rgba(255,61,133,.04));
+}
+#book:hover { transform:rotateX(1.5deg) rotateY(-2.5deg); }
+
+/* Ground shadow */
+#book::after {
+  content:''; position:absolute;
+  bottom:-36px; left:6%; right:6%; height:48px;
+  background:radial-gradient(ellipse, rgba(0,0,0,.72) 0%, transparent 72%);
+  filter:blur(16px);
+  transform:rotateX(82deg) translateZ(-24px);
+  pointer-events:none;
+}
+
+/* ════════════════════════════════════════════════
+   SPINE
+════════════════════════════════════════════════ */
+#spine {
+  position:absolute; left:-26px; top:3px;
+  width:26px; height:calc(100% - 6px);
+  background:linear-gradient(180deg,
+    #1c0832 0%, #2c1248 20%, #1c0832 50%, #120520 80%, #1c0832 100%);
+  border-radius:6px 0 0 6px;
+  transform:rotateY(-90deg) translateZ(13px);
+  transform-origin:right center;
+  box-shadow:
+    inset -8px 0 12px rgba(0,0,0,.65),
+    inset  3px 0  5px rgba(139,79,255,.12),
+    inset  0   0  1px rgba(255,61,133,.08);
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+#spine::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to right,
+    rgba(255,61,133,.05), transparent 40%, rgba(139,79,255,.08));
+}
+/* gold line accents */
+#spine::after {
+  content:''; position:absolute;
+  top:16px; bottom:16px; left:50%; width:1px;
+  background:linear-gradient(180deg,transparent,rgba(212,169,106,.25),transparent);
+  transform:translateX(-50%);
+}
+#spine-text {
+  color:rgba(255,61,133,.45);
+  font-family:'Cinzel',serif;
+  font-size:6.5px; letter-spacing:3.5px;
+  writing-mode:vertical-rl; text-orientation:mixed;
+  transform:rotate(180deg);
+  position:relative; z-index:1;
+  text-transform:uppercase;
+}
+
+/* ════════════════════════════════════════════════
+   PAGE SLOTS  (always visible, behind flipper)
+════════════════════════════════════════════════ */
+.pg-slot {
+  position:absolute; inset:0;
+  border-radius:2px 14px 14px 2px;
+  overflow:hidden;
+  backface-visibility:hidden;
+}
+#slot-back  { z-index:3; }
+#slot-front { z-index:4; }
+
+/* ════════════════════════════════════════════════
+   FLIPPER  — the rotating page element
+   KEY FIX: slot-front is hidden while flipper
+   shows, preventing the visual duplication.
+════════════════════════════════════════════════ */
+#flipper {
+  position:absolute; inset:0;
+  transform-style:preserve-3d;
+  transform-origin:left center;
+  transform:rotateY(0deg);
+  z-index:20;
+  will-change:transform;
+}
+.flip-face {
+  position:absolute; inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:2px 14px 14px 2px;
+  overflow:hidden;
+  will-change:transform;
+}
+#flip-front { transform:rotateY(0deg);   }
+#flip-back  { transform:rotateY(180deg); }
+
+/* Shadow canvas — rendered above both faces */
+#shd-cvs {
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none; z-index:35;
+  border-radius:2px 14px 14px 2px;
+}
+
+/* ════════════════════════════════════════════════
+   COVER
+════════════════════════════════════════════════ */
+#cover {
+  position:absolute; inset:0;
+  border-radius:2px 14px 14px 2px;
+  overflow:hidden; z-index:50;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center; padding:36px 30px;
+  cursor:pointer;
+  transform-origin:left center;
+  will-change:transform,opacity;
+  /* Luxury dark velvet */
+  background:linear-gradient(155deg,
+    #0c001e 0%, #1a0638 28%, #0c001e 55%, #160430 78%, #0c001e 100%);
+}
+/* Glowing orbs */
+#cover::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 20%, rgba(139,79,255,.26) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 42% at 50% 88%, rgba(255,61,133,.20) 0%, transparent 56%),
+    radial-gradient(ellipse 35% 25% at 20% 50%, rgba(212,169,106,.08) 0%, transparent 55%);
+  animation:covBreath 5s ease-in-out infinite alternate;
+}
+@keyframes covBreath { 0%{opacity:.6} 100%{opacity:1} }
+/* Inner frame */
+#cover::after {
+  content:''; position:absolute; inset:3px;
+  border:1px solid rgba(255,61,133,.12);
+  border-radius:12px; pointer-events:none;
+}
+/* Corner ornaments */
+.cov-corner {
+  position:absolute; font-size:11px; color:rgba(212,169,106,.35);
+  font-family:'Cinzel',serif; line-height:1;
+  animation:cornerSway 4s ease-in-out infinite alternate;
+}
+.cov-corner.tl { top:14px;  left:14px;  }
+.cov-corner.tr { top:14px;  right:14px; }
+.cov-corner.bl { bottom:14px; left:14px; }
+.cov-corner.br { bottom:14px; right:14px; }
+@keyframes cornerSway { 0%{opacity:.3} 100%{opacity:.7} }
+
+/* Top decorative line */
+.cov-topline {
+  position:absolute; top:28px; left:10%; right:10%; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(212,169,106,.25), transparent);
+}
+.cov-botline {
+  position:absolute; bottom:28px; left:10%; right:10%; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(212,169,106,.25), transparent);
+}
+
+.cov-symbol {
+  font-size:52px; margin-bottom:18px; position:relative; z-index:1;
+  filter:drop-shadow(0 0 22px rgba(255,61,133,.72));
+  animation:covSym 4.5s ease-in-out infinite;
+}
+@keyframes covSym {
+  0%,100% { transform:scale(1)    rotate(-4deg); }
+  50%     { transform:scale(1.09) rotate( 4deg); }
+}
+.cov-title {
+  font-family:'Cinzel Decorative',serif;
+  font-size:26px; font-weight:700; letter-spacing:6px;
+  background:linear-gradient(135deg, #ff3d85 0%, #c084fc 45%, #ff80b4 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(255,61,133,.45));
+  position:relative; z-index:1; margin-bottom:8px;
+}
+.cov-sub {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:13px; letter-spacing:4px;
+  color:rgba(255,255,255,.38);
+  position:relative; z-index:1; margin-bottom:28px;
+}
+.cov-divider {
+  width:72px; height:1px; margin:0 auto 24px;
+  background:linear-gradient(90deg,transparent,var(--gold),var(--purple2),var(--pink),transparent);
+  opacity:.6; position:relative; z-index:1;
+}
+.cov-cta {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:12px 28px;
+  border:1px solid rgba(255,61,133,.32);
+  border-radius:50px;
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:3px;
+  color:rgba(255,255,255,.65);
+  background:rgba(255,61,133,.05);
+  backdrop-filter:blur(10px);
+  position:relative; z-index:1;
+  transition:all .35s var(--spring);
+  animation:ctaGlow 3.5s ease-in-out infinite;
+}
+@keyframes ctaGlow {
+  0%,100% { box-shadow:0 0 0   rgba(255,61,133,0);   }
+  50%     { box-shadow:0 0 26px rgba(255,61,133,.28); }
+}
+#cover:hover .cov-cta {
+  background:rgba(255,61,133,.18); border-color:var(--pink);
+  color:#fff; transform:scale(1.05);
+  box-shadow:0 0 32px rgba(255,61,133,.4);
+}
+
+/* ════════════════════════════════════════════════
+   TEXT PAGE
+════════════════════════════════════════════════ */
+.pg {
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+}
+/* Hero section */
+.pg-hero {
+  flex-shrink:0; height:48%;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.pg-hero-bg  { position:absolute; inset:0; }
+.pg-hero-glo { position:absolute; inset:0; animation:hglow 4.5s ease-in-out infinite alternate; }
+@keyframes hglow { 0%{opacity:.45} 100%{opacity:1} }
+.pg-emoji {
+  font-size:58px; position:relative; z-index:2;
+  animation:emFloat 3.8s ease-in-out infinite alternate;
+  filter:drop-shadow(0 0 24px var(--ea, #ff3d85));
+}
+@keyframes emFloat {
+  0%   { transform:scale(1)    rotate(-5deg) translateY(0);    }
+  100% { transform:scale(1.1)  rotate( 5deg) translateY(-7px); }
+}
+/* Gradient fade into body */
+.pg-hero::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom,
+    transparent 35%, rgba(0,0,0,.12) 62%, rgba(0,0,0,.52) 100%);
+  z-index:3;
+}
+/* Paper noise */
+.pg-hero::before {
+  content:''; position:absolute; inset:0; z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  opacity:.55;
+}
+/* Body */
+.pg-body {
+  flex:1; padding:15px 20px 13px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  position:relative; z-index:1;
+}
+/* subtle ruled lines */
+.pg-body::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:repeating-linear-gradient(
+    transparent, transparent 26px, rgba(255,255,255,.018) 26px, rgba(255,255,255,.018) 27px);
+  background-position:0 52px;
+}
+.pg-num {
+  position:absolute; top:9px; right:13px; z-index:5;
+  font-family:'Cinzel',serif; font-size:7.5px; letter-spacing:2px;
+  color:rgba(255,61,133,.35);
+}
+.pg-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16.5px; font-weight:600; font-style:italic;
+  color:var(--white); line-height:1.3; margin-bottom:9px;
+  text-shadow:0 0 28px rgba(255,61,133,.22);
+}
+.pg-rule { width:34px; height:1px; margin-bottom:10px; border-radius:2px; }
+.pg-text {
+  font-family:'Cormorant Garamond',serif;
+  font-size:13.5px; font-weight:300; line-height:1.82;
+  color:var(--muted); flex:1; overflow:hidden;
+}
+.pg-foot {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:9px; padding-top:8px;
+  border-top:1px solid rgba(255,255,255,.045);
+}
+.pg-orn  { font-size:10px; letter-spacing:5px; color:rgba(255,61,133,.24); }
+.pg-pgr  { font-family:'Cinzel',serif; font-size:7.5px; letter-spacing:2px; color:rgba(255,255,255,.16); }
+
+/* ════════════════════════════════════════════════
+   IMAGE-ONLY PAGE
+════════════════════════════════════════════════ */
+.pg-img {
+  width:100%; height:100%;
+  position:relative; overflow:hidden;
+  background:#000;
+  display:flex; align-items:center; justify-content:center;
+}
+.pg-img img {
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+  transition:transform .9s var(--smooth), filter .6s;
+  will-change:transform;
+}
+/* Subtle ken-burns on hover */
+.pg-img:hover img { transform:scale(1.04); filter:brightness(1.05) saturate(1.1); }
+
+/* Vignette + colour toning */
+.pg-img::after {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,.62) 100%),
+    linear-gradient(to bottom,
+      rgba(0,0,0,.22) 0%, transparent 25%,
+      transparent 72%, rgba(0,0,0,.42) 100%);
+  mix-blend-mode:multiply; z-index:1;
+}
+/* Elegant colour-wash overlay */
+.pg-img::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(135deg,
+    rgba(139,79,255,.06) 0%, transparent 50%, rgba(255,61,133,.05) 100%);
+  z-index:2;
+}
+/* Page number badge */
+.pg-img .img-badge {
+  position:absolute; bottom:13px; right:13px; z-index:4;
+  font-family:'Cinzel',serif; font-size:7.5px; letter-spacing:2px;
+  color:rgba(255,255,255,.5);
+  background:rgba(0,0,0,.4);
+  backdrop-filter:blur(8px);
+  padding:3px 9px; border-radius:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+/* Fallback if image fails */
+.pg-img .img-err {
+  display:none; position:absolute; inset:0; z-index:5;
+  flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  background:linear-gradient(145deg,#0d001e,#1a0835);
+  color:rgba(255,255,255,.28); font-family:'Cinzel',serif;
+  font-size:9px; letter-spacing:2px; text-align:center; padding:24px;
+}
+.pg-img img.err ~ .img-err { display:flex; }
+
+/* ════════════════════════════════════════════════
+   VERSO  (back face of flipper — minimal)
+════════════════════════════════════════════════ */
+.verso {
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
+  position:relative; overflow:hidden;
+}
+.verso-line { width:44px; height:1px; }
+.verso-em   { font-size:34px; filter:drop-shadow(0 0 14px var(--ea,#ff3d85)); }
+.verso-num  {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:11px; letter-spacing:4px; color:rgba(255,255,255,.16);
+}
+
+/* ════════════════════════════════════════════════
+   END SHEET
+════════════════════════════════════════════════ */
+.end-sheet {
+  width:100%; height:100%;
+  background:linear-gradient(150deg,#08001a,#120828,#08001a);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center; padding:32px;
+  position:relative; overflow:hidden;
+}
+.end-sheet::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(139,79,255,.14), transparent 68%),
+    radial-gradient(ellipse at 50% 80%, rgba(255,61,133,.09),  transparent 55%);
+}
+.end-sheet::after {
+  content:''; position:absolute; inset:3px;
+  border:1px solid rgba(255,61,133,.08); border-radius:12px;
+}
+.es-quote {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:14.5px; color:rgba(255,255,255,.42); line-height:2.1;
+  position:relative; z-index:1;
+}
+.es-rule {
+  width:44px; height:1px; margin:18px auto;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.45; position:relative; z-index:1;
+}
+.es-heart {
+  font-size:30px; position:relative; z-index:1;
+  filter:drop-shadow(0 0 16px rgba(255,61,133,.65));
+  animation:esH 2.4s ease-in-out infinite;
+}
+@keyframes esH { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+/* ════════════════════════════════════════════════
+   CONTROLS BAR
+════════════════════════════════════════════════ */
+#bar {
+  position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+  z-index:200;
+  display:flex; align-items:center; gap:10px;
+  padding:8px 16px;
+  background:rgba(8,8,16,.78);
+  backdrop-filter:blur(26px) saturate(1.7);
+  border:1px solid rgba(255,255,255,.048);
+  border-radius:50px;
+  box-shadow:
+    0 8px 40px rgba(0,0,0,.6),
+    0 0 0 1px rgba(255,61,133,.06),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+/* Nav buttons */
+.cb {
+  width:34px; height:34px; border-radius:50%;
+  border:1px solid rgba(255,61,133,.2);
+  background:rgba(255,61,133,.06);
+  color:var(--muted); font-size:17px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .25s var(--spring); flex-shrink:0;
+  line-height:1;
+}
+.cb:hover {
+  background:rgba(255,61,133,.2); border-color:var(--pink);
+  color:#fff; transform:scale(1.14);
+  box-shadow:0 0 18px rgba(255,61,133,.38);
+}
+.cb:active  { transform:scale(.88); }
+.cb:disabled{ opacity:.2; pointer-events:none; }
+/* Indicator */
+#ind {
+  font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:2px;
+  color:rgba(255,255,255,.32); min-width:62px; text-align:center;
+}
+/* Separator */
+.sep { width:1px; height:16px; background:rgba(255,255,255,.065); flex-shrink:0; }
+/* Icon buttons (music, home) */
+.ib {
+  width:26px; height:26px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; transition:all .25s var(--spring); flex-shrink:0;
+}
+#btn-music {
+  border:1px solid rgba(139,79,255,.22);
+  background:rgba(139,79,255,.06);
+  color:rgba(139,79,255,.65);
+}
+#btn-music:hover {
+  background:rgba(139,79,255,.22); color:var(--purple);
+  transform:scale(1.14); box-shadow:0 0 14px rgba(139,79,255,.35);
+}
+#btn-music.on::after {
+  content:''; position:absolute; inset:-4px; border-radius:50%;
+  border:1px solid rgba(139,79,255,.4);
+  animation:mRing 1.6s ease-in-out infinite;
+}
+#btn-music { position:relative; }
+@keyframes mRing { 0%{transform:scale(1);opacity:.7} 100%{transform:scale(1.5);opacity:0} }
+#btn-home {
+  border:1px solid rgba(212,169,106,.2);
+  background:rgba(212,169,106,.05);
+  color:rgba(212,169,106,.55);
+}
+#btn-home:hover {
+  background:rgba(212,169,106,.18); color:var(--gold);
+  transform:scale(1.14); box-shadow:0 0 14px rgba(212,169,106,.28);
+}
+
+/* ════════════════════════════════════════════════
+   PROGRESS BAR
+════════════════════════════════════════════════ */
+#prog {
+  position:fixed; top:0; left:0; height:2px; width:0%;
+  background:linear-gradient(90deg, var(--pink), var(--purple), var(--pink2));
+  background-size:200% 100%;
+  animation:progShimmer 3s linear infinite;
+  z-index:300; transition:width .55s var(--smooth);
+  box-shadow:0 0 12px rgba(255,61,133,.6);
+}
+@keyframes progShimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+/* ════════════════════════════════════════════════
+   FLASH
+════════════════════════════════════════════════ */
+#flash {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(255,61,133,.03);
+  pointer-events:none; opacity:0;
+}
+
+/* ════════════════════════════════════════════════
+   SWIPE HINT
+════════════════════════════════════════════════ */
+#hint {
+  position:fixed; bottom:70px; left:50%; transform:translateX(-50%);
+  z-index:200; pointer-events:none;
+  font-family:'Cinzel',serif; font-size:8.5px; letter-spacing:3px;
+  color:rgba(255,255,255,.2);
+  animation:hintA 3.2s ease-in-out 1.8s forwards;
+}
+@keyframes hintA {
+  0%  { opacity:0; transform:translateX(-50%) translateY(8px); }
+  18% { opacity:1; transform:translateX(-50%) translateY(0);   }
+  72% { opacity:1; }
+  100%{ opacity:0; }
+}
+
+/* ════════════════════════════════════════════════
+   KEY LEGEND
+════════════════════════════════════════════════ */
+#keylg {
+  position:fixed; top:16px; right:16px; z-index:200;
+  display:flex; gap:5px; opacity:0;
+  animation:klshow 1s 3.5s ease forwards;
+}
+@keyframes klshow { 100%{opacity:.25} }
+.kbd {
+  padding:3px 7px;
+  border:1px solid rgba(255,255,255,.12); border-radius:4px;
+  font-size:8.5px; letter-spacing:1px;
+  font-family:'Cinzel',serif; color:rgba(255,255,255,.45);
+  background:rgba(255,255,255,.03);
+}
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════ */
+@media(max-width:420px) {
+  #book   { width:90vw; height:76vh; }
+  .cov-title { font-size:22px; }
+}
+@media(max-height:640px) {
+  #book { height:72vh; }
+  .pg-hero { height:42%; }
+}
+</style>
+</head>
+<body>
+
+<div id="ambient"></div>
+<canvas id="pcvs"></canvas>
+<div id="hearts"></div>
+<div id="prog"></div>
+<div id="flash"></div>
+
+<div id="keylg">
+  <div class="kbd">← →</div>
+  <div class="kbd">M</div>
+  <div class="kbd">ESC</div>
+</div>
+
+<div id="stage">
+  <div id="book-wrap">
+    <div id="book">
+      <div id="spine"><div id="spine-text">AMOR · SIEMPRE · AMOR</div></div>
+
+      <!-- Static slots — always behind the flipper -->
+      <div class="pg-slot" id="slot-back"></div>
+      <div class="pg-slot" id="slot-front"></div>
+
+      <!-- The rotating flipper -->
+      <div id="flipper">
+        <div class="flip-face" id="flip-front"></div>
+        <div class="flip-face" id="flip-back"></div>
+        <canvas id="shd-cvs"></canvas>
+      </div>
+
+      <!-- Front cover -->
+      <div id="cover" onclick="openBook()">
+        <div class="cov-topline"></div>
+        <div class="cov-botline"></div>
+        <div class="cov-corner tl">✦</div>
+        <div class="cov-corner tr">✦</div>
+        <div class="cov-corner bl">✦</div>
+        <div class="cov-corner br">✦</div>
+        <div class="cov-symbol">❦</div>
+        <div class="cov-title">AMOR</div>
+        <div class="cov-sub">una historia de amor</div>
+        <div class="cov-divider"></div>
+        <div class="cov-cta"><span>❧</span> ABRIR LIBRO <span>❧</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div id="bar">
+  <button class="cb" id="btn-prev" onclick="prevPage()">‹</button>
+  <div id="ind">— — —</div>
+  <button class="cb" id="btn-next" onclick="nextPage()">›</button>
+  <div class="sep"></div>
+  <button class="ib" id="btn-music" onclick="toggleMusic()" title="Música (M)">♪</button>
+  <button class="ib" id="btn-home"  onclick="goHome()"     title="Portada (Esc)">⌂</button>
+</div>
+
+<div id="hint">DESLIZA PARA PASAR PÁGINA</div>
+
+<!-- ═══════════════════════════════════════════
+     AUDIO — archivos en la misma carpeta/repo
+═══════════════════════════════════════════ -->
+<audio id="aud-flip"  src="sonido.mp3" preload="auto"></audio>
+<audio id="aud-open"  src="abrir.mp3"  preload="auto"></audio>
+<audio id="aud-music" src="musica.mp3" preload="auto" loop></audio>
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════
+   ╔═══════════════════════════════════════════════════════════════╗
+   ║                   CONFIGURACIÓN DEL LIBRO                    ║
+   ║                                                              ║
+   ║  Hay dos bloques separados:                                  ║
+   ║    1. TEXT_PAGES  — páginas de texto con emoji               ║
+   ║    2. IMAGE_PAGES — páginas de solo imagen (PNG de la repo)  ║
+   ║                                                              ║
+   ║  Las IMAGE_PAGES se insertan DESPUÉS de todas las de texto.  ║
+   ║  Solo tienes que editar esos dos arrays; el resto es         ║
+   ║  automático.                                                 ║
+   ╚═══════════════════════════════════════════════════════════════╝
+
+   ARCHIVOS REQUERIDOS EN LA REPO (misma carpeta que este HTML):
+     · sonido.mp3   — sonido al pasar página
+     · abrir.mp3    — sonido al abrir el libro
+     · musica.mp3   — música de fondo en bucle
+     · imagen1.png, imagen2.png, imagen3.png... — tus imágenes
+════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. PÁGINAS DE TEXTO ──────────────────────────────────────────
+   Campos:
+     title  — título en cursiva
+     text   — cuerpo (150-220 chars ideal)
+     emoji  — símbolo visual grande
+     g      — gradiente CSS del fondo
+     a      — color de acento (hex)
+─────────────────────────────────────────────────────────────────── */
+const TEXT_PAGES = [
+  {
+    title: "El Primer Encuentro",
+    text:  "Fue en un instante robado al tiempo. Tus ojos encontraron los míos y el mundo detuvo su respiración. No necesitamos palabras — el silencio entre nosotros ya lo decía todo.",
+    emoji: "✨", g:"linear-gradient(148deg,#170030,#2e0058,#170030)", a:"#c084fc"
+  },
+  {
+    title: "La Distancia",
+    text:  "Miles de kilómetros no pueden separar lo que el corazón sostiene. Te escribo desde la noche, sabiendo que en algún lugar tú también miras las mismas estrellas y piensas en mí.",
+    emoji: "🌙", g:"linear-gradient(148deg,#001530,#002448,#001530)", a:"#60a5fa"
+  },
+  {
+    title: "Cartas No Enviadas",
+    text:  "Hay cosas que jamás te dije, palabras guardadas en un cajón polvoriento. Que eres lo más real que he sentido. Que sin saberlo, cambiaste la dirección de todos mis días.",
+    emoji: "📜", g:"linear-gradient(148deg,#1a1000,#2e1a00,#1a1000)", a:"#fbbf24"
+  },
+  {
+    title: "El Jardín de Recuerdos",
+    text:  "Cada memoria que compartimos es una flor que no se marchita. Cierro los ojos y te veo ahí — riendo, brillando, siendo exactamente la persona que necesitaba encontrar.",
+    emoji: "🌸", g:"linear-gradient(148deg,#1a0015,#2e0028,#1a0015)", a:"#f472b6"
+  },
+  {
+    title: "La Tormenta",
+    text:  "Hubo noches de tormenta donde dudé de todo. Menos de ti. Eras el ancla en el caos, la voz que calmaba el mar interior. Contigo, incluso el miedo se volvía soportable.",
+    emoji: "⛈️", g:"linear-gradient(148deg,#08081a,#12122e,#08081a)", a:"#818cf8"
+  },
+  {
+    title: "Pequeños Instantes",
+    text:  "No son los grandes gestos lo que más recuerdo. Es la forma en que sostienes el café. Tu risa ante algo estúpido. El modo en que dices mi nombre — como si fuera lo más natural del mundo.",
+    emoji: "☕", g:"linear-gradient(148deg,#1a0800,#2e1200,#1a0800)", a:"#fb923c"
+  },
+  {
+    title: "El Espejo",
+    text:  "En tus ojos me vi por primera vez con claridad. No el reflejo distorsionado que cargaba — sino yo, tal y como soy, digno de ser amado. Me enseñaste a no huir de mí mismo.",
+    emoji: "🪞", g:"linear-gradient(148deg,#001a1a,#002c2c,#001a1a)", a:"#34d399"
+  },
+  {
+    title: "Noches de Invierno",
+    text:  "Las noches frías pierden su mordida cuando pienso en el calor que irradias. Eres ese tipo de persona que llena los espacios vacíos sin siquiera intentarlo. Pura presencia.",
+    emoji: "❄️", g:"linear-gradient(148deg,#000d1a,#001528,#000d1a)", a:"#7dd3fc"
+  },
+  {
+    title: "La Promesa",
+    text:  "No te prometí eternidades ni mundos perfectos. Te prometí honestidad. Estar presente en lo ordinario y en lo difícil. Ser el lugar donde siempre puedes llegar sin necesitar explicaciones.",
+    emoji: "💍", g:"linear-gradient(148deg,#1a001a,#2e002e,#1a001a)", a:"#e879f9"
+  },
+  {
+    title: "El Baile Invisible",
+    text:  "Hay una danza que hacemos sin música, sin coreografía acordada. Un ritmo secreto entre dos personas que se conocen más allá de las palabras. Llevamos ese baile en el alma.",
+    emoji: "💃", g:"linear-gradient(148deg,#1a0010,#2e0020,#1a0010)", a:"#fb7185"
+  },
+  {
+    title: "Lo Que No Se Dice",
+    text:  "El amor verdadero vive en el silencio compartido. En la mano que aprietas sin razón. En la mirada que cruza una habitación llena de gente y solo te encuentra a ti.",
+    emoji: "🤫", g:"linear-gradient(148deg,#081a00,#102800,#081a00)", a:"#86efac"
+  },
+  {
+    title: "Regresar",
+    text:  "Sin importar cuántos caminos tome, todos me regresan al mismo lugar: a ti. No como destino inevitable, sino como elección consciente y dichosa. Siempre volvería a elegirte.",
+    emoji: "🧭", g:"linear-gradient(148deg,#1a1a00,#282800,#1a1a00)", a:"#fde68a"
+  },
+  {
+    title: "El Umbral",
+    text:  "Estamos en el borde de algo que no tiene nombre todavía. Lo siento en los silencios largos, en la forma en que el tiempo se dobla cuando estamos juntos. Algo extraordinario comienza.",
+    emoji: "🌅", g:"linear-gradient(148deg,#1a0800,#281200,#1a0800)", a:"#fdba74"
+  },
+  {
+    title: "Tú eres el Poema",
+    text:  "Busqué las palabras perfectas durante años. Las encontré en ti, no en ningún libro. Eres la metáfora que no sabía que necesitaba, el verso que da sentido a todo lo que escribí antes.",
+    emoji: "🖋️", g:"linear-gradient(148deg,#10001a,#1c0030,#10001a)", a:"#a78bfa"
+  },
+  {
+    title: "Para Siempre Contigo",
+    text:  "Al final, no importan las distancias ni el tiempo. Lo que importa es simple: que eres mi persona favorita en este universo. Y eso, mi amor, no cambia nunca. Nunca.",
+    emoji: "♾️", g:"linear-gradient(148deg,#1a0020,#280035,#1a0020)", a:"#ff3d85"
+  },
+];
+
+/* ── 2. PÁGINAS DE IMAGEN ─────────────────────────────────────────
+   Se muestran AL FINAL del libro, después de todas las de texto.
+   Solo necesitas añadir el nombre del archivo PNG de la repo.
+   Las imágenes deben estar en la misma carpeta que este HTML.
+
+   Para añadir más:  { src: "imagen4.png" },
+   Para quitar:      elimina la línea correspondiente.
+─────────────────────────────────────────────────────────────────── */
+const IMAGE_PAGES = [
+  { src: "imagen1.png" },
+  { src: "imagen2.png" },
+  { src: "imagen3.png" },
+  /* ↓ Añade más imágenes aquí ↓ */
+  // { src: "imagen4.png" },
+  // { src: "imagen5.png" },
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   CONSTRUCCIÓN DEL ARRAY COMBINADO  (no editar)
+══════════════════════════════════════════════════════════════════ */
+const PAGES = [
+  ...TEXT_PAGES.map(p => ({ type:'text',  ...p })),
+  ...IMAGE_PAGES.map(p => ({ type:'image', ...p })),
+];
+const N = PAGES.length;
+
+/* ══════════════════════════════════════════════════════════════════
+   ESTADO
+══════════════════════════════════════════════════════════════════ */
+let cur       = -1;
+let animating = false;
+let bookOpen  = false;
+let musicOn   = false;
+
+let dStartX = 0, dStartY = 0, dCurX = 0;
+let dragging = false, dDir = null, dReady = false;
+
+/* ══════════════════════════════════════════════════════════════════
+   DOM REFS
+══════════════════════════════════════════════════════════════════ */
+const book      = document.getElementById('book');
+const coverEl   = document.getElementById('cover');
+const flipper   = document.getElementById('flipper');
+const flipFront = document.getElementById('flip-front');
+const flipBack  = document.getElementById('flip-back');
+const slotFront = document.getElementById('slot-front');
+const slotBack  = document.getElementById('slot-back');
+const shdCvs    = document.getElementById('shd-cvs');
+const sCtx      = shdCvs.getContext('2d');
+const progEl    = document.getElementById('prog');
+const flashEl   = document.getElementById('flash');
+const indEl     = document.getElementById('ind');
+const btnPrev   = document.getElementById('btn-prev');
+const btnNext   = document.getElementById('btn-next');
+const btnMusic  = document.getElementById('btn-music');
+
+const audFlip   = document.getElementById('aud-flip');
+const audOpen   = document.getElementById('aud-open');
+const audMusic  = document.getElementById('aud-music');
+
+audFlip.volume  = 0.6;
+audOpen.volume  = 0.7;
+audMusic.volume = 0.25;
+
+/* ══════════════════════════════════════════════════════════════════
+   AUDIO HELPERS
+══════════════════════════════════════════════════════════════════ */
+function playAud(el) {
+  try { el.currentTime = 0; const p = el.play(); if (p?.catch) p.catch(()=>{}); }
+  catch(e) {}
+}
+
+function startMusic() {
+  audMusic.play().then(() => {
+    musicOn = true;
+    btnMusic.classList.add('on');
+    btnMusic.textContent = '♬';
+    btnMusic.title = 'Silenciar (M)';
+  }).catch(() => {});
+}
+
+function toggleMusic() {
+  if (audMusic.paused) {
+    audMusic.play().then(() => {
+      musicOn = true;
+      btnMusic.classList.add('on');
+      btnMusic.textContent = '♬';
+    }).catch(() => {});
+  } else {
+    audMusic.pause();
+    musicOn = false;
+    btnMusic.classList.remove('on');
+    btnMusic.textContent = '♪';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HTML BUILDERS
+══════════════════════════════════════════════════════════════════ */
+function buildPage(i) {
+  if (i < 0 || i >= N) return '';
+  return PAGES[i].type === 'image' ? buildImgPage(i) : buildTextPage(i);
+}
+
+function buildTextPage(i) {
+  const p   = PAGES[i];
+  const num = String(i + 1).padStart(2, '0');
+  return `<div class="pg" style="background:${p.g}">
+    <div class="pg-hero">
+      <div class="pg-hero-bg" style="background:${p.g}"></div>
+      <div class="pg-hero-glo" style="background:radial-gradient(ellipse 80% 65% at 50% 62%,${p.a}28 0%,transparent 72%)"></div>
+      <div class="pg-emoji" style="--ea:${p.a}">${p.emoji}</div>
+    </div>
+    <div class="pg-num">${num}</div>
+    <div class="pg-body">
+      <div>
+        <div class="pg-title">${p.title}</div>
+        <div class="pg-rule" style="background:linear-gradient(90deg,${p.a},${p.a}44,#8b4fff);box-shadow:0 0 9px ${p.a}66"></div>
+        <div class="pg-text">${p.text}</div>
+      </div>
+      <div class="pg-foot">
+        <div class="pg-orn">· · ·</div>
+        <div class="pg-pgr">${i+1} / ${N}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildImgPage(i) {
+  const p   = PAGES[i];
+  const num = String(i + 1).padStart(2, '0');
+  return `<div class="pg-img">
+    <img
+      src="${p.src}"
+      alt="Página ${i+1}"
+      onerror="this.classList.add('err')"
+      loading="eager"
+      decoding="async"
+    />
+    <div class="img-err">
+      <div style="font-size:32px;opacity:.35">🖼️</div>
+      <div>${p.src}</div>
+      <div style="font-size:7px;opacity:.4;margin-top:2px">imagen no encontrada en la repo</div>
+    </div>
+    <div class="img-badge">${num} / ${N}</div>
+  </div>`;
+}
+
+/* verso — cara trasera del flipper (siempre minimalista) */
+function buildVerso(i) {
+  if (i < 0 || i >= N) return '';
+  const p  = PAGES[i];
+  const bg = p.type === 'image'
+    ? 'linear-gradient(148deg,#0d001e,#1a0835)' : p.g;
+  const ac = p.type === 'image' ? '#ff3d85' : p.a;
+  const em = p.type === 'image' ? '🖼️' : p.emoji;
+  const num = String(i + 1).padStart(2, '0');
+  return `<div class="verso" style="background:${bg}">
+    <div class="verso-line" style="background:linear-gradient(90deg,transparent,${ac}55,transparent)"></div>
+    <div class="verso-em" style="--ea:${ac}">${em}</div>
+    <div class="verso-num">— ${num} —</div>
+    <div class="verso-line" style="background:linear-gradient(90deg,transparent,${ac}55,transparent)"></div>
+  </div>`;
+}
+
+function buildEndSheet() {
+  return `<div class="end-sheet">
+    <div class="es-quote">"El amor no es solo un sentimiento.<br>Es la decisión más hermosa<br>que tomas cada mañana."</div>
+    <div class="es-rule"></div>
+    <div class="es-heart">❦</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SHADOW CANVAS
+══════════════════════════════════════════════════════════════════ */
+function resizeShdCvs() {
+  const r = book.getBoundingClientRect();
+  shdCvs.width  = r.width;
+  shdCvs.height = r.height;
+}
+
+function drawShadow(ang) {
+  const w = shdCvs.width, h = shdCvs.height;
+  sCtx.clearRect(0, 0, w, h);
+
+  const progress = Math.abs(ang) / 180;
+  const mid      = Math.sin(progress * Math.PI);
+  if (mid < 0.005) return;
+
+  if (progress <= 0.5) {
+    /* Front face curling away: darken right edge */
+    const t   = progress / 0.5;
+    const fw  = w * (0.08 + 0.6 * t);
+    const alp = mid * 0.76;
+
+    const gF = sCtx.createLinearGradient(w - fw, 0, w, 0);
+    gF.addColorStop(0,    `rgba(0,0,0,0)`);
+    gF.addColorStop(0.4,  `rgba(0,0,0,${alp * 0.5})`);
+    gF.addColorStop(0.78, `rgba(0,0,0,${alp * 0.82})`);
+    gF.addColorStop(1,    `rgba(0,0,0,${alp})`);
+    sCtx.fillStyle = gF;
+    sCtx.fillRect(w - fw, 0, fw, h);
+
+    /* Specular crease highlight */
+    const cx = w - fw * 0.025;
+    const gH = sCtx.createLinearGradient(cx - 18, 0, cx + 6, 0);
+    gH.addColorStop(0,   `rgba(255,255,255,0)`);
+    gH.addColorStop(0.5, `rgba(255,255,255,${mid * 0.26})`);
+    gH.addColorStop(1,   `rgba(255,255,255,0)`);
+    sCtx.fillStyle = gH;
+    sCtx.fillRect(cx - 18, 0, 24, h);
+
+    /* Warm colour bleed near crease */
+    const gC = sCtx.createLinearGradient(w - fw * 0.3, 0, w, 0);
+    gC.addColorStop(0, `rgba(139,79,255,0)`);
+    gC.addColorStop(1, `rgba(139,79,255,${mid * 0.07})`);
+    sCtx.fillStyle = gC;
+    sCtx.fillRect(w - fw * 0.3, 0, fw * 0.3, h);
+
+  } else {
+    /* Back face revealing: darken left edge (mirror) */
+    const t   = (progress - 0.5) / 0.5;
+    const bw  = w * (0.08 + 0.6 * (1 - t));
+    const alp = mid * 0.76;
+
+    const gB = sCtx.createLinearGradient(bw, 0, 0, 0);
+    gB.addColorStop(0,    `rgba(0,0,0,0)`);
+    gB.addColorStop(0.4,  `rgba(0,0,0,${alp * 0.5})`);
+    gB.addColorStop(0.78, `rgba(0,0,0,${alp * 0.82})`);
+    gB.addColorStop(1,    `rgba(0,0,0,${alp})`);
+    sCtx.fillStyle = gB;
+    sCtx.fillRect(0, 0, bw, h);
+
+    const cx = bw * 0.025;
+    const gH = sCtx.createLinearGradient(cx - 6, 0, cx + 18, 0);
+    gH.addColorStop(0,   `rgba(255,255,255,0)`);
+    gH.addColorStop(0.5, `rgba(255,255,255,${mid * 0.22})`);
+    gH.addColorStop(1,   `rgba(255,255,255,0)`);
+    sCtx.fillStyle = gH;
+    sCtx.fillRect(cx - 6, 0, 24, h);
+  }
+
+  /* Bottom-edge thickness shadow */
+  const gBot = sCtx.createLinearGradient(0, h - 16, 0, h);
+  gBot.addColorStop(0, `rgba(0,0,0,0)`);
+  gBot.addColorStop(1, `rgba(0,0,0,${mid * 0.45})`);
+  sCtx.fillStyle = gBot;
+  sCtx.fillRect(0, h - 16, w, 16);
+
+  /* Subtle global vignette at peak fold */
+  const gV = sCtx.createRadialGradient(w/2,h/2,w*0.18,w/2,h/2,w*0.82);
+  gV.addColorStop(0, `rgba(0,0,0,0)`);
+  gV.addColorStop(1, `rgba(0,0,0,${mid * 0.14})`);
+  sCtx.fillStyle = gV;
+  sCtx.fillRect(0, 0, w, h);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SLOT MANAGEMENT
+   FIX: slotFront is hidden while flipper is active, preventing
+        the ghost/duplication artefact.
+══════════════════════════════════════════════════════════════════ */
+function setSlots(frontIdx, backIdx) {
+  slotFront.innerHTML = buildPage(frontIdx);
+  if      (backIdx >= 0 && backIdx < N) slotBack.innerHTML = buildPage(backIdx);
+  else if (backIdx === N)               slotBack.innerHTML = buildEndSheet();
+  else                                  slotBack.innerHTML = '';
+  /* Both slots visible by default */
+  slotFront.style.visibility = '';
+  slotBack.style.visibility  = '';
+}
+
+/* Hide slotFront while the flipper (which shows the same page) is animating */
+function hideSlotFront() { slotFront.style.visibility = 'hidden'; }
+function showSlotFront() { slotFront.style.visibility = '';       }
+
+/* ══════════════════════════════════════════════════════════════════
+   OPEN BOOK
+══════════════════════════════════════════════════════════════════ */
+function openBook() {
+  if (bookOpen || animating) return;
+  animating = true; bookOpen = true;
+
+  playAud(audOpen);
+  if (!musicOn) startMusic();
+
+  coverEl.style.transition = 'transform .95s cubic-bezier(.36,0,.1,1), opacity .95s ease';
+  coverEl.style.transform  = 'rotateY(-178deg)';
+  coverEl.style.opacity    = '0';
+
+  cur = 0;
+  setSlots(0, 1);
+  slotFront.style.zIndex = '4';
+  slotBack.style.zIndex  = '3';
+  flipFront.innerHTML    = buildPage(0);
+  flipBack.innerHTML     = '';
+  flipper.style.transform = 'rotateY(0deg)';
+  flipper.style.opacity   = '0';
+
+  setTimeout(() => {
+    coverEl.style.display = 'none';
+    flipper.style.opacity = '1';
+    animating = false;
+    updateUI();
+  }, 980);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GO HOME
+══════════════════════════════════════════════════════════════════ */
+function goHome() {
+  if (!bookOpen) return;
+  animating = false; dragging = false; dReady = false;
+  bookOpen  = false; cur = -1;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+
+  flipFront.innerHTML = '';
+  flipBack.innerHTML  = '';
+  slotFront.innerHTML = '';
+  slotBack.innerHTML  = '';
+  showSlotFront();
+  flipper.style.transform = 'rotateY(0deg)';
+  sCtx.clearRect(0, 0, shdCvs.width, shdCvs.height);
+
+  coverEl.style.display    = '';
+  coverEl.style.opacity    = '0';
+  coverEl.style.transform  = 'rotateY(-20deg)';
+  coverEl.style.transition = 'transform .8s var(--spring), opacity .55s ease';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    coverEl.style.transform = 'rotateY(0deg)';
+    coverEl.style.opacity   = '1';
+  }));
+  updateUI();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ANIMATION ENGINE  — pure rAF, no CSS transition on flipper
+══════════════════════════════════════════════════════════════════ */
+let rafId = null;
+
+function runTurn({ from, to, dur, cb }) {
+  if (rafId) cancelAnimationFrame(rafId);
+  const t0 = performance.now();
+  const delta = to - from;
+  function ease(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+  (function frame(now) {
+    const rawT = Math.min((now - t0) / dur, 1);
+    const ang  = from + delta * ease(rawT);
+    flipper.style.transform = `rotateY(${ang}deg)`;
+    drawShadow(ang);
+    if (rawT < 1) { rafId = requestAnimationFrame(frame); }
+    else {
+      flipper.style.transform = `rotateY(${to}deg)`;
+      drawShadow(to);
+      cb();
+    }
+  })(t0);
+}
+
+function snapBack(from, to) {
+  if (rafId) cancelAnimationFrame(rafId);
+  const t0  = performance.now();
+  const dur = 430;
+  const delta = to - from;
+
+  function easeElastic(t) {
+    if (t === 0 || t === 1) return t;
+    return Math.pow(2, -10 * t) * Math.sin((t * 10 - .75) * (2 * Math.PI) / .35) + 1;
+  }
+  (function frame(now) {
+    const rawT = Math.min((now - t0) / dur, 1);
+    const ang  = from + delta * easeElastic(rawT);
+    flipper.style.transform = `rotateY(${ang}deg)`;
+    drawShadow(ang);
+    if (rawT < 1) { rafId = requestAnimationFrame(frame); }
+    else {
+      flipper.style.transform = `rotateY(${to}deg)`;
+      drawShadow(to);
+      resetFlipper();
+    }
+  })(t0);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   NEXT / PREV PAGE
+══════════════════════════════════════════════════════════════════ */
+function nextPage() {
+  if (animating || !bookOpen || cur >= N - 1) return;
+  animating = true;
+
+  const from = cur, to = cur + 1;
+
+  /* Populate flipper BEFORE hiding slotFront — prevents flash */
+  flipFront.innerHTML = buildPage(from);
+  flipBack.innerHTML  = buildVerso(to);
+  flipper.style.transform = 'rotateY(0deg)';
+
+  /* Now set slots (back slot = arriving page) and hide front slot
+     because the flipper is showing the exact same content */
+  setSlots(from, to);
+  slotFront.style.zIndex = '4';
+  slotBack.style.zIndex  = '3';
+  hideSlotFront(); // ← KEY FIX: prevents duplication
+
+  playAud(audFlip); doFlash();
+
+  runTurn({ from: 0, to: -180, dur: 660, cb: () => {
+    cur = to;
+    setSlots(cur, cur + 1);   // showSlotFront called inside setSlots
+    flipFront.innerHTML = buildPage(cur);
+    flipBack.innerHTML  = '';
+    flipper.style.transform = 'rotateY(0deg)';
+    drawShadow(0);
+    dReady = false; animating = false; updateUI();
+  }});
+}
+
+function prevPage() {
+  if (animating || !bookOpen || cur <= 0) return;
+  animating = true;
+
+  const from = cur, to = cur - 1;
+
+  flipFront.innerHTML = buildPage(to);
+  flipBack.innerHTML  = buildVerso(from);
+  flipper.style.transform = 'rotateY(-180deg)';
+
+  setSlots(to, from);
+  slotFront.style.zIndex = '4';
+  slotBack.style.zIndex  = '3';
+  hideSlotFront(); // ← KEY FIX
+
+  playAud(audFlip); doFlash();
+
+  runTurn({ from: -180, to: 0, dur: 660, cb: () => {
+    cur = to;
+    setSlots(cur, cur + 1);
+    flipFront.innerHTML = buildPage(cur);
+    flipBack.innerHTML  = '';
+    flipper.style.transform = 'rotateY(0deg)';
+    drawShadow(0);
+    dReady = false; animating = false; updateUI();
+  }});
+}
+
+function resetFlipper() {
+  dReady = false;
+  setSlots(cur, cur + 1);
+  flipFront.innerHTML = buildPage(cur);
+  flipBack.innerHTML  = '';
+  flipper.style.transform = 'rotateY(0deg)';
+  drawShadow(0);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DRAG / SWIPE
+══════════════════════════════════════════════════════════════════ */
+function cx(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+function cy(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
+function curAng() {
+  const m = (flipper.style.transform || '').match(/rotateY\(([-\d.]+)deg\)/);
+  return m ? parseFloat(m[1]) : 0;
+}
+
+function startDrag(e) {
+  if (!bookOpen || animating) return;
+  dStartX = cx(e); dStartY = cy(e); dCurX = dStartX;
+  dragging = true; dDir = null; dReady = false;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  if (!musicOn) startMusic();
+}
+
+function onDrag(e) {
+  if (!dragging || animating) return;
+  dCurX = cx(e);
+  const dx = dCurX - dStartX;
+  const dy = Math.abs(cy(e) - dStartY);
+
+  /* Cancel on mostly-vertical swipe */
+  if (!dDir && dy > 52 && Math.abs(dx) < 22) { dragging = false; return; }
+  if (e.cancelable) e.preventDefault();
+
+  const bw = book.getBoundingClientRect().width;
+
+  if (dx < -3 && cur < N - 1) {
+    dDir = 'next';
+    if (!dReady) {
+      flipFront.innerHTML = buildPage(cur);
+      flipBack.innerHTML  = buildVerso(cur + 1);
+      flipper.style.transform = 'rotateY(0deg)';
+      setSlots(cur, cur + 1);
+      hideSlotFront(); // ← KEY FIX applied to drag too
+      dReady = true;
+    }
+    const prog = Math.min(Math.abs(dx) / bw, 1);
+    const ang  = -(prog * 180);
+    flipper.style.transform = `rotateY(${ang}deg)`;
+    drawShadow(ang);
+    book.style.transform = `rotateX(3.5deg) rotateY(${-5 + prog * 3}deg)`;
+
+  } else if (dx > 3 && cur > 0) {
+    dDir = 'prev';
+    if (!dReady) {
+      flipFront.innerHTML = buildPage(cur - 1);
+      flipBack.innerHTML  = buildVerso(cur);
+      flipper.style.transform = 'rotateY(-180deg)';
+      setSlots(cur - 1, cur);
+      hideSlotFront(); // ← KEY FIX
+      dReady = true;
+    }
+    const prog = Math.min(dx / bw, 1);
+    const ang  = -180 + prog * 180;
+    flipper.style.transform = `rotateY(${ang}deg)`;
+    drawShadow(ang);
+    book.style.transform = `rotateX(3.5deg) rotateY(${-5 - prog * 3}deg)`;
+  }
+}
+
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  book.style.transform = '';
+
+  if (animating || !dDir || !dReady) { resetFlipper(); dDir = null; return; }
+
+  const dx     = dCurX - dStartX;
+  const bw     = book.getBoundingClientRect().width;
+  const THRESH = bw * 0.25;
+  const a      = curAng();
+
+  if (Math.abs(dx) >= THRESH) {
+    animating = true;
+    playAud(audFlip); doFlash();
+
+    if (dDir === 'next') {
+      runTurn({ from: a, to: -180, dur: 390, cb: () => {
+        cur++;
+        setSlots(cur, cur + 1);
+        flipFront.innerHTML = buildPage(cur);
+        flipBack.innerHTML  = '';
+        flipper.style.transform = 'rotateY(0deg)';
+        drawShadow(0);
+        dReady = false; animating = false; updateUI();
+      }});
+    } else {
+      runTurn({ from: a, to: 0, dur: 390, cb: () => {
+        cur--;
+        setSlots(cur, cur + 1);
+        flipFront.innerHTML = buildPage(cur);
+        flipBack.innerHTML  = '';
+        flipper.style.transform = 'rotateY(0deg)';
+        drawShadow(0);
+        dReady = false; animating = false; updateUI();
+      }});
+    }
+  } else {
+    snapBack(a, dDir === 'next' ? 0 : -180);
+  }
+  dDir = null;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FLASH FEEDBACK
+══════════════════════════════════════════════════════════════════ */
+function doFlash() {
+  flashEl.style.transition = 'none';
+  flashEl.style.opacity    = '1';
+  requestAnimationFrame(() => {
+    flashEl.style.transition = 'opacity .5s ease';
+    flashEl.style.opacity    = '0';
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   UI UPDATE
+══════════════════════════════════════════════════════════════════ */
+function updateUI() {
+  if (!bookOpen || cur < 0) {
+    indEl.textContent  = '— — —';
+    progEl.style.width = '0%';
+    btnPrev.disabled   = true;
+    btnNext.disabled   = true;
+    return;
+  }
+  indEl.textContent  = `${String(cur+1).padStart(2,'0')} · ${String(N).padStart(2,'0')}`;
+  progEl.style.width = `${(cur / (N-1)) * 100}%`;
+  btnPrev.disabled   = cur <= 0;
+  btnNext.disabled   = cur >= N - 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
+  if (e.key === 'ArrowLeft')  prevPage();
+  if (e.key === 'Escape')     goHome();
+  if (e.key === 'Enter' && !bookOpen) openBook();
+  if (e.key === 'm' || e.key === 'M') toggleMusic();
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   POINTER / TOUCH EVENTS
+══════════════════════════════════════════════════════════════════ */
+book.addEventListener('touchstart',  startDrag, { passive: true  });
+book.addEventListener('touchmove',   onDrag,    { passive: false });
+book.addEventListener('touchend',    endDrag,   { passive: true  });
+book.addEventListener('touchcancel', endDrag,   { passive: true  });
+
+book.addEventListener('pointerdown', e => {
+  book.setPointerCapture(e.pointerId);
+  startDrag(e);
+});
+book.addEventListener('pointermove',   onDrag);
+book.addEventListener('pointerup',     endDrag);
+book.addEventListener('pointercancel', endDrag);
+
+/* ══════════════════════════════════════════════════════════════════
+   PARTICLE SYSTEM
+══════════════════════════════════════════════════════════════════ */
+const pcvs = document.getElementById('pcvs');
+const pctx = pcvs.getContext('2d');
+let parts  = [];
+
+function resizePcvs() { pcvs.width = innerWidth; pcvs.height = innerHeight; }
+
+function mkPart() {
+  const palette = ['#ff3d85','#8b4fff','#c084fc','#ff80b4','#d4a96a'];
+  return {
+    x:  Math.random() * pcvs.width,
+    y:  pcvs.height + 10,
+    r:  Math.random() * 1.8 + 0.25,
+    vy: -(Math.random() * .55 + .18),
+    vx: (Math.random() - .5) * .3,
+    op: Math.random() * .42 + .1,
+    c:  palette[Math.floor(Math.random() * palette.length)],
+    fl: Math.random() * Math.PI * 2,
+  };
+}
+
+let pFrame = 0;
+function tickParticles(ts) {
+  pctx.clearRect(0, 0, pcvs.width, pcvs.height);
+  if (++pFrame % 4 === 0 && parts.length < 48) parts.push(mkPart());
+  parts = parts.filter(p => p.y > -10);
+  for (const p of parts) {
+    p.y += p.vy;
+    p.x += p.vx + Math.sin(ts * .0005 + p.fl) * .14;
+    pctx.beginPath();
+    pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    pctx.fillStyle   = p.c;
+    pctx.globalAlpha = p.op * (.68 + .32 * Math.sin(ts * .0022 + p.fl));
+    pctx.fill();
+  }
+  pctx.globalAlpha = 1;
+  requestAnimationFrame(tickParticles);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FLOATING HEARTS
+══════════════════════════════════════════════════════════════════ */
+const heartsEl = document.getElementById('hearts');
+const SYMS     = ['❤','♡','❦','♥','✦','✧'];
+
+function spawnHeart() {
+  const el       = document.createElement('div');
+  el.className   = 'hrt';
+  el.textContent = SYMS[Math.floor(Math.random() * SYMS.length)];
+  el.style.left      = (Math.random() * 93 + 3) + 'vw';
+  el.style.fontSize  = (Math.random() * 12 + 7) + 'px';
+  el.style.opacity   = (Math.random() * .48 + .08).toString();
+  const dur = (Math.random() * 10 + 8).toFixed(1);
+  const del = (Math.random() * 3).toFixed(1);
+  const r   = () => ((Math.random() - .5) * 30).toFixed(1) + 'deg';
+  ['r0','r1','r2','r3','r4'].forEach(k => el.style.setProperty('--' + k, r()));
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay    = del + 's';
+  heartsEl.appendChild(el);
+  setTimeout(() => el.remove(), (parseFloat(dur) + parseFloat(del)) * 1000 + 400);
+}
+setInterval(spawnHeart, 1100);
+
+/* ══════════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════════ */
+window.addEventListener('resize', () => { resizePcvs(); resizeShdCvs(); });
+resizePcvs();
+resizeShdCvs();
+requestAnimationFrame(tickParticles);
+updateUI();
+
+/* Pre-seed hearts */
+for (let i = 0; i < 7; i++) setTimeout(spawnHeart, i * 240);
+
+/* Dismiss hint */
+setTimeout(() => {
+  const h = document.getElementById('hint');
+  if (h) {
+    h.style.transition = 'opacity .9s ease';
+    h.style.opacity    = '0';
+    setTimeout(() => h.remove(), 950);
+  }
+}, 4500);
+
+/* Music: try auto-start on first user interaction */
+window.addEventListener('pointerdown', () => { if (!musicOn) startMusic(); }, { once: true });
+window.addEventListener('touchstart',  () => { if (!musicOn) startMusic(); }, { once: true });
+
+console.log(
+  '%c📖 Libro Premium v3', 'color:#ff3d85;font-size:14px;font-weight:bold;\n',
+  `\n${N} páginas (${TEXT_PAGES.length} texto + ${IMAGE_PAGES.length} imagen)`,
+  '\nArchivos de repo: sonido.mp3 · abrir.mp3 · musica.mp3 · imagen1.png ...'
+);
+</script>
+</body>
+</html>
